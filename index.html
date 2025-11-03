@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>D-GRADE</title>
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Prism (syntax highlight) -->
+  <!-- Prism (syntax highlighting) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
@@ -16,11 +16,11 @@
   <style>
     body { background: linear-gradient(180deg,#071033 0%, #041024 100%); }
     .card { backdrop-filter: blur(6px); }
-    pre { white-space: pre-wrap; word-break: break-word; }
+    pre { white-space: pre-wrap; word-break: break-word; margin: 0; }
     .compact pre { max-height: 160px; overflow:auto; }
     .copyBtn { background: linear-gradient(90deg,#7c3aed,#06b6d4); color: white; }
     .downloadBtn { background: linear-gradient(90deg,#10b981,#3b82f6); color: white; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; display: block; padding: 1rem; }
     .program-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1rem; }
   </style>
 </head>
@@ -28,7 +28,7 @@
   <header class="max-w-6xl mx-auto p-6 flex items-center justify-between">
     <div>
       <h1 class="text-4xl font-extrabold tracking-tight">D-GRADE</h1>
-      <p class="text-slate-300 mt-1">Your C programs — click Copy to copy exact code (includes preserved).</p>
+      <p class="text-slate-300 mt-1">Cybersecurity C Programs — click <strong>Copy</strong> to copy exact code.</p>
     </div>
     <div class="flex gap-3 items-center">
       <button id="toggleCompact" class="px-4 py-2 rounded-lg border border-slate-600">Toggle Compact</button>
@@ -41,7 +41,7 @@
   </main>
 
   <script>
-  // --- Put all programs here as JS objects. Use template literals so we preserve all characters ---
+  /* ------------ Programs data (raw code preserved in JS strings) ------------ */
   const programs = [
     {
       title: "HTTRACK",
@@ -74,6 +74,7 @@ int main() {
     return 0;
 }`
     },
+
     {
       title: "NMAP",
       desc: "Run nmap -sV via popen and print results.",
@@ -112,6 +113,7 @@ int main(void) {
     return 0;
 }`
     },
+
     {
       title: "PASSCRACK",
       desc: "Simple wordlist password checker (demo only).",
@@ -158,6 +160,7 @@ int main() {
     return 0;
 }`
     },
+
     {
       title: "PENTEST",
       desc: "TCP port scanner and sample response grabber.",
@@ -217,6 +220,7 @@ int main(int argc, char *argv[]){
     return 0;
 }`
     },
+
     {
       title: "STEGENO",
       desc: "BMP LSB steganography (hide / extract).",
@@ -340,6 +344,7 @@ int main() {
     return 0;
 }`
     },
+
     {
       title: "LIVE MONITOR",
       desc: "Packet capture using libpcap (prints src->dst and length).",
@@ -389,51 +394,67 @@ int main() {
     }
   ];
 
-  // --- Render program cards and insert code using textContent ---
+  /* ------------ Render cards (SAFE: we do NOT inject raw code into innerHTML) ------------ */
   const container = document.getElementById('programs');
 
-  programs.forEach((p, i) => {
+  programs.forEach((p, idx) => {
+    // create card element
     const card = document.createElement('article');
     card.className = 'card p-4 rounded-2xl border border-slate-700 bg-white/5';
 
+    // set inner HTML for title/desc/buttons only (no code)
     card.innerHTML = `
       <div class="flex justify-between items-start">
         <div>
-          <h2 class="text-2xl font-semibold">${p.title}</h2>
-          <p class="text-slate-300 text-sm mt-1">${p.desc}</p>
+          <h2 class="text-2xl font-semibold"></h2>
+          <p class="text-slate-300 text-sm mt-1"></p>
         </div>
         <div class="flex flex-col gap-2">
-          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-i="${i}">Copy</button>
-          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-i="${i}">Select</button>
+          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Copy</button>
+          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Select</button>
         </div>
       </div>
-      <pre class="mt-3"><code class="language-c" id="code-${i}"></code></pre>
+      <pre class="mt-3"><code class="language-c" id="code-${idx}"></code></pre>
     `;
+
+    // fill title and description safely (textContent to avoid HTML injection)
+    card.querySelector('h2').textContent = p.title;
+    card.querySelector('p').textContent = p.desc;
+
+    // append card to container
     container.appendChild(card);
 
-    // Insert code safely (preserves < and >) and highlight
-    const codeEl = document.getElementById(`code-${i}`);
+    // set code via textContent (this preserves < and > literally)
+    const codeEl = document.getElementById(`code-${idx}`);
     codeEl.textContent = p.code;
+
+    // apply Prism highlighting
     Prism.highlightElement(codeEl);
   });
 
-  // copy & select handlers
+  /* ------------ Copy and Select handlers (delegation) ------------ */
   document.addEventListener('click', async (e) => {
-    if (e.target.matches('.copyBtn')) {
-      const i = e.target.dataset.i;
-      const codeEl = document.getElementById(`code-${i}`);
-      const text = codeEl ? codeEl.textContent : '';
+    const copyBtn = e.target.closest('.copyBtn');
+    if (copyBtn) {
+      const idx = copyBtn.dataset.idx;
+      const codeEl = document.getElementById(`code-${idx}`);
+      if (!codeEl) return;
+      const txt = codeEl.textContent;
       try {
-        await navigator.clipboard.writeText(text);
-        const old = e.target.textContent;
-        e.target.textContent = 'Copied!';
-        setTimeout(()=> e.target.textContent = old, 1400);
+        await navigator.clipboard.writeText(txt);
+        const prev = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(()=> copyBtn.textContent = prev, 1400);
       } catch {
-        alert('Copy failed — select and copy manually.');
+        alert('Copy failed — your browser may block clipboard. Select and copy manually.');
       }
-    } else if (e.target.matches('.selectBtn')) {
-      const i = e.target.dataset.i;
-      const codeEl = document.getElementById(`code-${i}`);
+      return;
+    }
+
+    const selBtn = e.target.closest('.selectBtn');
+    if (selBtn) {
+      const idx = selBtn.dataset.idx;
+      const codeEl = document.getElementById(`code-${idx}`);
       if (!codeEl) return;
       const range = document.createRange();
       range.selectNodeContents(codeEl);
@@ -443,13 +464,13 @@ int main() {
     }
   });
 
-  // Compact toggle
+  /* ------------ Toggle compact and download snapshot ------------ */
   document.getElementById('toggleCompact').addEventListener('click', () => {
     document.body.classList.toggle('compact');
   });
 
-  // Download current page snapshot as HTML
   document.getElementById('downloadBtn').addEventListener('click', () => {
+    // Make a snapshot of the current document (outerHTML)
     const html = '<!doctype html>\\n' + document.documentElement.outerHTML;
     const blob = new Blob([html], {type: 'text/html'});
     const a = document.createElement('a');
