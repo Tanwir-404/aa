@@ -4,47 +4,53 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>D-GRADE</title>
+
+  <!-- Tailwind for styling (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism for syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+
   <style>
     body { background: linear-gradient(180deg,#071033 0%, #041024 100%); }
     .card { backdrop-filter: blur(6px); }
     pre { white-space: pre-wrap; word-break: break-word; }
-    .copyBtn{ background:linear-gradient(90deg,#7c3aed,#06b6d4); color:white; }
-    .download-file{ background:linear-gradient(90deg,#10b981,#3b82f6); color:white; }
-    .compact pre{ max-height:140px; overflow:auto; }
-    .program-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1rem; }
-    code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace; }
+    .compact pre { max-height: 160px; overflow:auto; }
+    .copyBtn { background: linear-gradient(90deg,#7c3aed,#06b6d4); color: white; }
+    .downloadBtn { background: linear-gradient(90deg,#10b981,#3b82f6); color: white; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
+    .program-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1rem; }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 font-sans">
   <header class="max-w-6xl mx-auto p-6 flex items-center justify-between">
     <div>
       <h1 class="text-4xl font-extrabold tracking-tight">D-GRADE</h1>
-      <p class="text-slate-300 mt-1">A Stylish Collection of Cybersecurity C Programs — Click <strong>Copy</strong> to copy code.</p>
+      <p class="text-slate-300 mt-1">Cybersecurity C Programs — click <strong>Copy</strong> to copy the code.</p>
     </div>
     <div class="flex gap-3 items-center">
       <button id="toggleCompact" class="px-4 py-2 rounded-lg border border-slate-600">Toggle Compact</button>
-      <button id="downloadBtn" class="px-4 py-2 rounded-lg download-file">Download HTML</button>
+      <button id="downloadBtn" class="px-4 py-2 rounded-lg downloadBtn">Download HTML</button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto p-6 grid gap-6">
+  <main class="max-w-6xl mx-auto p-6">
     <section class="program-grid" id="programs">
-      <!-- Program cards injected by JS -->
+      <!-- Program cards will be injected here -->
     </section>
   </main>
 
   <script>
+  /* PROGRAMS ARRAY - raw C code strings preserved as template literals */
   const programs = [
-    {
-      title: 'HTTRACK',
-      tag: 'network',
-      description: 'Mirror a website using httrack (wraps system call).',
-      code: `#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
+`{
+  "title": "HTTRACK",
+  "description": "Mirror a website using httrack (system call wrapper).",
+  "code": \`
+#include <stdio.h>
+#include <stdlib.h>
 
 int main() {
     char url[256];
@@ -59,41 +65,41 @@ int main() {
 
     snprintf(command, sizeof(command), "httrack %s -O %s +*.%s -v", url, folder, url);
 
-    printf("\nExecuting command: %s\n", command);
+    printf("\\nExecuting command: %s\\n", command);
 
     int result = system(command);
 
     if (result == 0)
-        printf("\nWebsite mirrored successfully in folder %s\n", folder);
+        printf("\\nWebsite mirrored successfully in folder %s\\n", folder);
     else
-        printf("\nFailed to mirror the website.\n");
+        printf("\\nFailed to mirror the website.\\n");
 
     return 0;
-}`
-    },
-
-    {
-      title: 'NMAP',
-      tag: 'network',
-      description: 'Runs nmap -sV and prints output (popen).',
-      code: `#include <stdio.h>
+}
+\`
+}`,
+`{
+  "title": "NMAP",
+  "description": "Run nmap -sV via popen and print results.",
+  "code": \`
+#include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
     char target[100];
     printf("Enter the target IP or domain: ");
     if (scanf("%99s", target) != 1) {
-        fprintf(stderr, "Failed to read target\n");
+        fprintf(stderr, "Failed to read target\\n");
         return 1;
     }
 
     char command[200];
     if (snprintf(command, sizeof(command), "nmap -sV %s", target) >= (int)sizeof(command)) {
-        fprintf(stderr, "Command too long\n");
+        fprintf(stderr, "Command too long\\n");
         return 1;
     }
 
-    printf("\nRunning Nmap scan on %s...\n\n", target);
+    printf("\\nRunning Nmap scan on %s...\\n\\n", target);
 
     FILE *fp;
     char output[200];
@@ -109,22 +115,20 @@ int main(void) {
 
     pclose(fp);
     return 0;
-}`
-    },
-
-    {
-      title: 'PASSCRACK',
-      tag: 'basic',
-      description: 'Simple wordlist password checker (demo only).',
-      code: `#include <stdio.h>
+}
+\`
+}`,
+`{
+  "title": "PASSCRACK",
+  "description": "Simple wordlist password checker (demo only).",
+  "code": \`
+#include <stdio.h>
 #include <string.h>
 
 int main() {
     char password[] = "Helloworld123";
-    printf("The program is secured with a password.
-");
-    printf("Enter the path to word list:
-");
+    printf("The program is secured with a password.\\n");
+    printf("Enter the path to word list:\\n");
 
     char path[100];
     scanf("%s", path);
@@ -133,47 +137,40 @@ int main() {
     int flag = 0;
     fptr = fopen(path, "r");
     if (fptr == NULL) {
-        printf("Could not open file: %s
-", path);
+        printf("Could not open file: %s\\n", path);
         return 1;
     }
 
     char mystr[100];
-    printf("Password Cracking Begin...
-");
+    printf("Password Cracking Begin...\\n");
 
     while (fgets(mystr, 100, fptr)) {
-        mystr[strcspn(mystr, "\n")] = 0;  // Remove newline
-        printf("Trying... %s
-", mystr);
+        mystr[strcspn(mystr, "\\n")] = 0;  // Remove newline
+        printf("Trying... %s\\n", mystr);
 
         if (strcmp(mystr, password) == 0) {
-            printf("The password is successfully cracked!
-");
-            printf("The password is: %s
-", mystr);
+            printf("The password is successfully cracked!\\n");
+            printf("The password is: %s\\n", mystr);
             fclose(fptr);
             flag = 1;
             break;
         } else {
-            printf("Failed...
-");
+            printf("Failed...\\n");
         }
     }
 
     if (!flag)
-        printf("Password not found in the wordlist.
-");
+        printf("Password not found in the wordlist.\\n");
 
     return 0;
-}`
-    },
-
-    {
-      title: 'PENTEST',
-      tag: 'network',
-      description: 'Simple TCP port scanner and sample response grabber.',
-      code: `#include <stdio.h>
+}
+\`
+}`,
+`{
+  "title": "PENTEST",
+  "description": "TCP port scanner and sample response grabber.",
+  "code": \`
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -182,17 +179,16 @@ int main() {
 #include <sys/socket.h>
 
 void risk_analysis(){
-    printf("\n--- Risk Analysis Justification ---\n");
-    printf("1. Identifies exploitable vulnerabilities\n");
-    printf("2. Validates effectiveness of security measures\n");
-    printf("3. Demonstrates potential business impacts\n");
-    printf("4. Ensures compliance with security standards\n");
+    printf("\\n--- Risk Analysis Justification ---\\n");
+    printf("1. Identifies exploitable vulnerabilities\\n");
+    printf("2. Validates effectiveness of security measures\\n");
+    printf("3. Demonstrates potential business impacts\\n");
+    printf("4. Ensures compliance with security standards\\n");
 }
 
 int main(int argc, char *argv[]){
     if (argc != 4){
-        printf("Usage: %s <target_IP> <Start_Port> <End_Port>
-", argv[0]);
+        printf("Usage: %s <target_IP> <Start_Port> <End_Port>\\n", argv[0]);
         return 1;
     }
 
@@ -202,7 +198,7 @@ int main(int argc, char *argv[]){
     struct sockaddr_in target;
     char buf[512];
 
-    printf("\nPenetration Test Starting...\n");
+    printf("\\nPenetration Test Starting...\\n");
 
     for (int port = start_port; port <= end_port; port++){
         int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -214,13 +210,13 @@ int main(int argc, char *argv[]){
         target.sin_addr.s_addr = inet_addr(target_ip);
 
         if (connect(sock, (struct sockaddr *)&target, sizeof(target)) == 0){
-            printf("[+] Open Port Found %d\n", port);
-            const char *req = "HEAD / HTTP/1.0\r\n\r\n";
+            printf("[+] Open Port Found %d\\n", port);
+            const char *req = "HEAD / HTTP/1.0\\r\\n\\r\\n";
             send(sock, req, strlen(req), 0);
             int n = recv(sock, buf, sizeof(buf) - 1, 0);
             if (n > 0){
-                buf[n] = '\0';
-                printf("[*] Sample Response:\n%s\n", buf);
+                buf[n] = '\\0';
+                printf("[*] Sample Response:\\n%s\\n", buf);
             }
         }
         close(sock);
@@ -228,14 +224,14 @@ int main(int argc, char *argv[]){
 
     risk_analysis();
     return 0;
-}`
-    },
-
-    {
-      title: 'STEGENO',
-      tag: 'fileio',
-      description: 'Basic BMP LSB steganography (hide/extract).',
-      code: `#include <stdio.h>
+}
+\`
+}`,
+`{
+  "title": "STEGENO",
+  "description": "BMP LSB steganography (hide / extract).",
+  "code": \`
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -293,18 +289,18 @@ void extract_message(FILE *image) {
     }
 
     if (msg_index >= 3)
-        message[msg_index - 3] = '\0';
+        message[msg_index - 3] = '\\0';
     else
-        message[0] = '\0';
+        message[0] = '\\0';
 
-    printf("Hidden Message: %s\n", message);
+    printf("Hidden Message: %s\\n", message);
 }
 
 int main() {
     int choice;
-    printf("Steganography Tool\n");
-    printf("1. Hide message\n");
-    printf("2. Extract message\n");
+    printf("Steganography Tool\\n");
+    printf("1. Hide message\\n");
+    printf("2. Extract message\\n");
     printf("Enter choice: ");
     scanf("%d", &choice);
     getchar();
@@ -319,17 +315,17 @@ int main() {
         getchar();
         printf("Enter secret message: ");
         fgets(secret, sizeof(secret), stdin);
-        secret[strcspn(secret, "\n")] = '\0';
+        secret[strcspn(secret, "\\n")] = '\\0';
 
         FILE *src = fopen(source_file, "rb");
         FILE *dest = fopen(dest_file, "wb");
         if (!src || !dest) {
-            printf("Error opening files!\n");
+            printf("Error opening files!\\n");
             return 1;
         }
 
         hide_message(src, dest, secret);
-        printf("Message hidden successfully in %s\n", dest_file);
+        printf("Message hidden successfully in %s\\n", dest_file);
 
         fclose(src);
         fclose(dest);
@@ -341,7 +337,7 @@ int main() {
 
         FILE *img = fopen(image_file, "rb");
         if (!img) {
-            printf("Error opening file!\n");
+            printf("Error opening file!\\n");
             return 1;
         }
 
@@ -349,18 +345,18 @@ int main() {
         fclose(img);
     }
     else {
-        printf("Invalid choice!\n");
+        printf("Invalid choice!\\n");
     }
 
     return 0;
-}`
-    },
-
-    {
-      title: 'LIVE MONITOR',
-      tag: 'network',
-      description: 'Packet capture using libpcap (prints src->dst and length).',
-      code: `#include <pcap.h>
+}
+\`
+}`,
+`{
+  "title": "LIVE MONITOR",
+  "description": "Packet capture using libpcap (prints src->dst and length).",
+  "code": \`
+#include <pcap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
@@ -368,10 +364,9 @@ int main() {
 #include <net/ethernet.h>
 
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
-    const struct ip *ip = (const struct ip*)(packet + sizeof(struct ether_header));
-    printf("%s -> %s | len: %d
-",
-           inet_ntoa(ip->ip_src), inet_ntoa(ip->ip_dst), header->len);
+    const struct ip *ip_hdr = (const struct ip *)(packet + sizeof(struct ether_header));
+    printf("%s -> %s | len: %d\\n",
+           inet_ntoa(ip_hdr->ip_src), inet_ntoa(ip_hdr->ip_dst), header->len);
 }
 
 int main() {
@@ -380,24 +375,20 @@ int main() {
     pcap_t *handle;
 
     if (pcap_findalldevs(&alldevs, errbuf) == -1) {
-        fprintf(stderr, "Error finding devices: %s
-", errbuf);
+        fprintf(stderr, "Error finding devices: %s\\n", errbuf);
         return 1;
     }
 
     if (!alldevs) {
-        fprintf(stderr, "No devices found!
-");
+        fprintf(stderr, "No devices found!\\n");
         return 1;
     }
     dev = alldevs;
-    printf("Listening on %s...
-", dev->name);
+    printf("Listening on %s...\\n", dev->name);
 
     handle = pcap_open_live(dev->name, 65535, 1, 1000, errbuf);
     if (!handle) {
-        fprintf(stderr, "Couldn't open device %s: %s
-", dev->name, errbuf);
+        fprintf(stderr, "Couldn't open device %s: %s\\n", dev->name, errbuf);
         pcap_freealldevs(alldevs);
         return 2;
     }
@@ -407,14 +398,17 @@ int main() {
     pcap_freealldevs(alldevs);
     pcap_close(handle);
     return 0;
+}
+\`
 }`
-    }
-  ];
+  ].map(JSON.parse); // parse strings into objects
 
   const container = document.getElementById('programs');
-  programs.forEach(p => {
+
+  programs.forEach((p, idx) => {
     const card = document.createElement('article');
     card.className = 'card p-4 rounded-2xl border border-slate-700 bg-white/5';
+
     card.innerHTML = `
       <div class="flex justify-between items-start">
         <div>
@@ -422,53 +416,63 @@ int main() {
           <p class="text-slate-300 text-sm mt-1">${p.description}</p>
         </div>
         <div class="flex flex-col gap-2">
-          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-code='${p.title}'>Copy</button>
-          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-code='${p.title}'>Select</button>
+          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Copy</button>
+          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Select</button>
         </div>
       </div>
-      <pre class="mt-3"><code class="language-c" id='code-${p.title}'>${p.code}</code></pre>`;
+      <pre class="mt-3"><code class="language-c" id="code-${idx}"></code></pre>
+    `;
     container.appendChild(card);
+
+    // Insert code safely using textContent to preserve < and >
+    const codeEl = document.getElementById(`code-${idx}`);
+    codeEl.textContent = p.code;
+
+    // Highlight via Prism
+    Prism.highlightElement(codeEl);
   });
 
-  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  document.querySelectorAll('.copyBtn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.dataset.code;
-      const codeEl = document.getElementById('code-'+id);
+  // Copy functionality
+  document.addEventListener('click', async (e) => {
+    if (e.target.matches('.copyBtn')) {
+      const idx = e.target.dataset.idx;
+      const codeEl = document.getElementById(`code-${idx}`);
       const code = codeEl ? codeEl.textContent : '';
-      try{
+      try {
         await navigator.clipboard.writeText(code);
-        btn.textContent = 'Copied!';
-        setTimeout(()=>btn.textContent='Copy', 1500);
-      }catch(e){
+        const old = e.target.textContent;
+        e.target.textContent = 'Copied!';
+        setTimeout(()=> e.target.textContent = old, 1400);
+      } catch (err) {
         alert('Copy failed — select and copy manually.');
       }
-    });
-  });
-
-  document.querySelectorAll('.selectBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.code;
-      const codeEl = document.getElementById('code-'+id);
-      if(!codeEl) return;
+    }
+    if (e.target.matches('.selectBtn')) {
+      const idx = e.target.dataset.idx;
+      const codeEl = document.getElementById(`code-${idx}`);
+      if (!codeEl) return;
       const range = document.createRange();
       range.selectNodeContents(codeEl);
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
-    });
+    }
   });
 
-  document.getElementById('toggleCompact').onclick = () => { document.body.classList.toggle('compact'); };
+  // Compact toggle
+  document.getElementById('toggleCompact').addEventListener('click', () => {
+    document.body.classList.toggle('compact');
+  });
 
-  document.getElementById('downloadBtn').onclick = () => {
-    const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html'});
+  // Download HTML (current page snapshot)
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const doc = '<!doctype html>\\n' + document.documentElement.outerHTML;
+    const blob = new Blob([doc], {type: 'text/html'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'D-GRADE.html';
     a.click();
-  };
+  });
   </script>
 </body>
 </html>
