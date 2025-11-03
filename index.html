@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>D-GRADE</title>
 
-  <!-- Tailwind for styling (CDN) -->
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Prism for syntax highlighting -->
+  <!-- Prism (syntax highlight) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
@@ -28,7 +28,7 @@
   <header class="max-w-6xl mx-auto p-6 flex items-center justify-between">
     <div>
       <h1 class="text-4xl font-extrabold tracking-tight">D-GRADE</h1>
-      <p class="text-slate-300 mt-1">Cybersecurity C Programs — click <strong>Copy</strong> to copy the code.</p>
+      <p class="text-slate-300 mt-1">Your C programs — click Copy to copy exact code (includes preserved).</p>
     </div>
     <div class="flex gap-3 items-center">
       <button id="toggleCompact" class="px-4 py-2 rounded-lg border border-slate-600">Toggle Compact</button>
@@ -37,19 +37,16 @@
   </header>
 
   <main class="max-w-6xl mx-auto p-6">
-    <section class="program-grid" id="programs">
-      <!-- Program cards will be injected here -->
-    </section>
+    <section class="program-grid" id="programs"></section>
   </main>
 
   <script>
-  /* PROGRAMS ARRAY - raw C code strings preserved as template literals */
+  // --- Put all programs here as JS objects. Use template literals so we preserve all characters ---
   const programs = [
-`{
-  "title": "HTTRACK",
-  "description": "Mirror a website using httrack (system call wrapper).",
-  "code": \`
-#include <stdio.h>
+    {
+      title: "HTTRACK",
+      desc: "Mirror a website using httrack (system call wrapper).",
+      code: `#include <stdio.h>
 #include <stdlib.h>
 
 int main() {
@@ -75,14 +72,12 @@ int main() {
         printf("\\nFailed to mirror the website.\\n");
 
     return 0;
-}
-\`
-}`,
-`{
-  "title": "NMAP",
-  "description": "Run nmap -sV via popen and print results.",
-  "code": \`
-#include <stdio.h>
+}`
+    },
+    {
+      title: "NMAP",
+      desc: "Run nmap -sV via popen and print results.",
+      code: `#include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
@@ -115,14 +110,12 @@ int main(void) {
 
     pclose(fp);
     return 0;
-}
-\`
-}`,
-`{
-  "title": "PASSCRACK",
-  "description": "Simple wordlist password checker (demo only).",
-  "code": \`
-#include <stdio.h>
+}`
+    },
+    {
+      title: "PASSCRACK",
+      desc: "Simple wordlist password checker (demo only).",
+      code: `#include <stdio.h>
 #include <string.h>
 
 int main() {
@@ -163,14 +156,12 @@ int main() {
         printf("Password not found in the wordlist.\\n");
 
     return 0;
-}
-\`
-}`,
-`{
-  "title": "PENTEST",
-  "description": "TCP port scanner and sample response grabber.",
-  "code": \`
-#include <stdio.h>
+}`
+    },
+    {
+      title: "PENTEST",
+      desc: "TCP port scanner and sample response grabber.",
+      code: `#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -224,14 +215,12 @@ int main(int argc, char *argv[]){
 
     risk_analysis();
     return 0;
-}
-\`
-}`,
-`{
-  "title": "STEGENO",
-  "description": "BMP LSB steganography (hide / extract).",
-  "code": \`
-#include <stdio.h>
+}`
+    },
+    {
+      title: "STEGENO",
+      desc: "BMP LSB steganography (hide / extract).",
+      code: `#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -349,14 +338,12 @@ int main() {
     }
 
     return 0;
-}
-\`
-}`,
-`{
-  "title": "LIVE MONITOR",
-  "description": "Packet capture using libpcap (prints src->dst and length).",
-  "code": \`
-#include <pcap.h>
+}`
+    },
+    {
+      title: "LIVE MONITOR",
+      desc: "Packet capture using libpcap (prints src->dst and length).",
+      code: `#include <pcap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
@@ -398,14 +385,14 @@ int main() {
     pcap_freealldevs(alldevs);
     pcap_close(handle);
     return 0;
-}
-\`
 }`
-  ].map(JSON.parse); // parse strings into objects
+    }
+  ];
 
+  // --- Render program cards and insert code using textContent ---
   const container = document.getElementById('programs');
 
-  programs.forEach((p, idx) => {
+  programs.forEach((p, i) => {
     const card = document.createElement('article');
     card.className = 'card p-4 rounded-2xl border border-slate-700 bg-white/5';
 
@@ -413,43 +400,40 @@ int main() {
       <div class="flex justify-between items-start">
         <div>
           <h2 class="text-2xl font-semibold">${p.title}</h2>
-          <p class="text-slate-300 text-sm mt-1">${p.description}</p>
+          <p class="text-slate-300 text-sm mt-1">${p.desc}</p>
         </div>
         <div class="flex flex-col gap-2">
-          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Copy</button>
-          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-idx="${idx}">Select</button>
+          <button class="copyBtn px-3 py-1 rounded-md text-sm" data-i="${i}">Copy</button>
+          <button class="selectBtn px-3 py-1 rounded-md text-sm" data-i="${i}">Select</button>
         </div>
       </div>
-      <pre class="mt-3"><code class="language-c" id="code-${idx}"></code></pre>
+      <pre class="mt-3"><code class="language-c" id="code-${i}"></code></pre>
     `;
     container.appendChild(card);
 
-    // Insert code safely using textContent to preserve < and >
-    const codeEl = document.getElementById(`code-${idx}`);
+    // Insert code safely (preserves < and >) and highlight
+    const codeEl = document.getElementById(`code-${i}`);
     codeEl.textContent = p.code;
-
-    // Highlight via Prism
     Prism.highlightElement(codeEl);
   });
 
-  // Copy functionality
+  // copy & select handlers
   document.addEventListener('click', async (e) => {
     if (e.target.matches('.copyBtn')) {
-      const idx = e.target.dataset.idx;
-      const codeEl = document.getElementById(`code-${idx}`);
-      const code = codeEl ? codeEl.textContent : '';
+      const i = e.target.dataset.i;
+      const codeEl = document.getElementById(`code-${i}`);
+      const text = codeEl ? codeEl.textContent : '';
       try {
-        await navigator.clipboard.writeText(code);
+        await navigator.clipboard.writeText(text);
         const old = e.target.textContent;
         e.target.textContent = 'Copied!';
         setTimeout(()=> e.target.textContent = old, 1400);
-      } catch (err) {
+      } catch {
         alert('Copy failed — select and copy manually.');
       }
-    }
-    if (e.target.matches('.selectBtn')) {
-      const idx = e.target.dataset.idx;
-      const codeEl = document.getElementById(`code-${idx}`);
+    } else if (e.target.matches('.selectBtn')) {
+      const i = e.target.dataset.i;
+      const codeEl = document.getElementById(`code-${i}`);
       if (!codeEl) return;
       const range = document.createRange();
       range.selectNodeContents(codeEl);
@@ -464,10 +448,10 @@ int main() {
     document.body.classList.toggle('compact');
   });
 
-  // Download HTML (current page snapshot)
+  // Download current page snapshot as HTML
   document.getElementById('downloadBtn').addEventListener('click', () => {
-    const doc = '<!doctype html>\\n' + document.documentElement.outerHTML;
-    const blob = new Blob([doc], {type: 'text/html'});
+    const html = '<!doctype html>\\n' + document.documentElement.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'D-GRADE.html';
